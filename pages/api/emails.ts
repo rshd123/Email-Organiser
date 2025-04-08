@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   
     const response = await fetch(
-      `https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=10`,
+      `https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=20`,
       {
         headers: {
           Authorization: `Bearer ${token.accessToken}`,
@@ -22,6 +22,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   
     const {messages} = await response.json();
+
+    // console.log(messages);
 
     const emailDetails = await Promise.all(
       messages.map(async (msg: any) => {
@@ -37,6 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return data;
       })
     );
+    // console.log(emailDetails);
     res.status(200).json(emailDetails);
   
   } catch (err) {
