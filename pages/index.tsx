@@ -24,6 +24,9 @@ export default function Home() {
   const [labelFilter, setLabelFilter] = useState<string>('ALL');
   const [dateFilter, setDateFilter] = useState<string>('ALL');
 
+  const [fromDate, setFromdate] = useState<string>('');
+  const [toDate, setTodate] = useState<string>('');
+
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -52,22 +55,40 @@ export default function Home() {
   // Filtered emails based on dropdowns
   const filteredEmails = emails.filter((email) => {
     const date = new Date(Number(email.internalDate));
-    const isLabelMatch =
-      labelFilter === 'ALL' || email.labelIds.includes(labelFilter);
+
+    const isLabelMatch = labelFilter === 'ALL' || email.labelIds.includes(labelFilter);
+
     const isDateMatch =
       dateFilter === 'ALL' ||
       (dateFilter === 'RECENT' && Date.now() - date.getTime() < 7 * 24 * 60 * 60 * 1000) || // last 7 days
       (dateFilter === 'OLDER' && Date.now() - date.getTime() >= 7 * 24 * 60 * 60 * 1000); //after 7 days
 
-    return isLabelMatch && isDateMatch;
+  
+    const from = fromDate ? new Date(fromDate) : null;
+    const to = toDate ? new Date(toDate) : null;
+  
+    // Normalize dates to compare only the date part
+    if (from) {
+      from.setHours(0, 0, 0, 0);
+    }
+    if (to) {
+      to.setHours(23, 59, 59, 999);
+    }
+  
+    const isAfterFrom = from ? date >= from : true;
+    const isBeforeTo = to ? date <= to : true;
+  
+    const isDateRangeMatch = isAfterFrom && isBeforeTo;
+  
+    return isLabelMatch && isDateMatch && isDateRangeMatch;
   });
 
   return (
-    emails.length === 0 ? (<>Loading...</>) :
+    emails.length === 0 ? (<div className=' m-10 w-20 h-20 border-5 border-gray-200 border-t-blue-500 rounded-full animate-spin'></div>) :
       (
         <>
           <div className="text-center font-bold text-3xl mb-4">
-            Smart Email Organiser
+            Find Your Gmail
           </div>
 
           <div className="flex justify-center gap-4 mb-4">
@@ -89,6 +110,25 @@ export default function Home() {
               <option value="RECENT">Last 7 Days</option>
               <option value="OLDER">Older than 7 Days</option>
             </select>
+
+            <label>
+              From: &nbsp;
+              <input
+                className='border rounded'
+                type='date'
+                value={fromDate}
+                onChange={(e)=>setFromdate(e.target.value)}
+              />
+            </label>
+            <label>
+              To: &nbsp;
+              <input
+                className='border rounded'
+                type='date'
+                value={toDate}
+                onChange={(e)=>setTodate(e.target.value)}
+              />
+            </label>
           </div>
 
           <div>
