@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import { FaSearch } from 'react-icons/fa';
 
 interface Header {
   name: string;
@@ -33,6 +34,7 @@ export default function Home() {
     const fetchEmails = async () => {
       const res = await fetch('/api/emails', {
         credentials: 'include',
+        cache:'no-store',
       });
       const data = await res.json();
       console.log(data);
@@ -88,7 +90,7 @@ export default function Home() {
       (
         <>
           <div className="text-center font-bold text-3xl mb-4">
-            Find Your Gmail
+            Gmail Organiser
           </div>
 
           <div className="flex justify-center gap-4 mb-4">
@@ -129,6 +131,16 @@ export default function Home() {
                 onChange={(e)=>setTodate(e.target.value)}
               />
             </label>
+          </div>
+          <div className='text-center border-2 w-55 m-auto rounded-2xl flex items-center '>
+            <span>
+              <FaSearch/>
+            </span>
+            <input
+              className="outline-none"
+              type='text'
+              placeholder='search mails'
+            />
           </div>
 
           <div>

@@ -16,8 +16,13 @@ export default function Home() {
 
   return (
     <div>
+      <div className="text-center font-bold text-3xl mb-4">
+            Gmail Organiser
+      </div>
       {!session ? (
-        <button onClick={() => signIn("google")}>Sign in with Google</button>
+        <div className="text-center">
+          <button className="bg-blue-500 rounded text-white" onClick={() => signIn("google")}>Sign in with Google</button>
+          </div>
       ) : (
         <>
           <h1>Welcome, {session.user?.name}</h1>
